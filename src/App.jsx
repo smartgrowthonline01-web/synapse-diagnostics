@@ -7,7 +7,7 @@ import {
   Users, DollarSign, Filter, Video, Layers, ArrowRight,
   RefreshCw, Lock, TrendingUp, TrendingDown, AlertCircle, Mail, Phone
 } from 'lucide-react';
-
+import { saveDiagnostic } from './lib/saveDiagnostic'
 export default function SynapseDiagnostics() {
   // ==================== STATE ====================
   const [currentScreen, setCurrentScreen] = useState('inicio');
@@ -505,7 +505,25 @@ export default function SynapseDiagnostics() {
     };
 
     // Enviar datos al webhook para nurturing
+    // Enviar datos al webhook para nurturing
     await enviarDatosWebhook(resultadoFinal);
+
+    // Guardar en Supabase
+    try {
+      const diagnosticoGuardado = await saveDiagnostic({
+        prospecto: {
+          nombre: nombreProspecto,
+          email: emailProspecto,
+          tipoNegocio: tipoNegocio,
+          facturacion: facturacion,
+        },
+        captura: captura,
+        resultado: resultadoFinal
+      });
+      console.log('Diagnóstico guardado con ID:', diagnosticoGuardado.id);
+    } catch (error) {
+      console.error('Error guardando en Supabase:', error);
+    }
 
     setDiagnosticoResult(resultadoFinal);
     setCurrentScreen('resultado');
